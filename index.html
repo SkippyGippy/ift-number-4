@@ -1,0 +1,127 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        label {
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        .form-control {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 10px 12px;
+            font-size: 14px;
+            color: #6b7280;
+            height: auto;
+            box-shadow: none;
+        }
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        small.form-text {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+        .btn-primary {
+            background-color: #1d4ed8;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            background-color: #1e40af;
+        }
+        .btn-primary:focus {
+            background-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="iceCreamForm">
+            <div class="form-group">
+                <label for="iceCreamName">Ice Cream Name</label>
+                <input type="text" class="form-control" id="iceCreamName" placeholder="Enter Ice Cream Name" required>
+                <small class="form-text">Enter the Ice Cream you Like</small>
+            </div>
+            <div class="form-group">
+                <label for="iceCreamFlavor">Ice Cream Flavor</label>
+                <input type="text" class="form-control" id="iceCreamFlavor" placeholder="Ice Cream Flavor" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            
+            <div id="message" style="display: none; margin-top: 20px;" class="alert"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('iceCreamForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            // Get the values from the form
+            const name = document.getElementById('iceCreamName').value;
+            const flavor = document.getElementById('iceCreamFlavor').value;
+            
+            // Create the data object
+            const data = {
+                name: name,
+                flavor: flavor
+            };
+            
+            // Send POST request to Flask API
+            fetch('http://127.0.0.1:5000/icecream', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Show success message
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'alert alert-success';
+                messageDiv.textContent = 'Ice cream added successfully: ' + data.result.name + ' - ' + data.result.flavor;
+                
+                // Clear the form
+                document.getElementById('iceCreamForm').reset();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // Show error message
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'alert alert-danger';
+                messageDiv.textContent = 'Error adding ice cream. Please try again.';
+            });
+        });
+    </script>
+    
+</body>
+</html>
